@@ -1,0 +1,14 @@
+{
+  "eslint.nodePath": "C:/Users/merem/OneDrive/Documentos/Cursos/Nodejs/Clases/breakingnode_propia/cursonodes_eduit/modulos/modulo_4/api/app",
+  "eslint.options": { "configFile": "C:/Users/merem/OneDrive/Documentos/Cursos/Nodejs/Clases/breakingnode_propia/cursonodes_eduit/modulos/modulo_4/api/app/.eslintrc.json" },
+  "eslint.workingDirectories": [ "./services", "./middlewares", "util", "routes"],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+  }
+}
