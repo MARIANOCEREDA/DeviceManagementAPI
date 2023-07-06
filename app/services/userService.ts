@@ -125,9 +125,9 @@ class UserService {
         }
 
         if(user.length === 0){
-            throw createError(404, "User not found")
+            throw createError(404, "User not found.")
         }else{
-            const getDataQuery = `SELECT PasswordHash, Salt FROM ${this.dbName}.${this.dbTableName} WHERE Username = '${username}'`
+            const getDataQuery = `SELECT PasswordHash, Salt, UserId FROM ${this.dbName}.${this.dbTableName} WHERE Username = '${username}'`
 
             const [rows,] = await connection.query(getDataQuery) as any;
 
@@ -136,7 +136,7 @@ class UserService {
             if(incomingHashedPassword === rows[0].PasswordHash){
 
                 const payload = { 
-                    id: 1,
+                    sub:rows[0].UserId,
                     username: username,
                     iat: Date.now()
                 };
@@ -148,9 +148,7 @@ class UserService {
             }else{
                 throw createError(401, "Username or password incorrect.")
             }
-
         }
-
     }
 
     async getToken(username:string) : Promise<any> {
@@ -174,7 +172,7 @@ class UserService {
         }
     }
 
-    async getAll(){
+    async getAll() : Promise<any> {
 
         let connection:mysql.PoolConnection
 

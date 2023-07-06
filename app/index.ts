@@ -25,6 +25,9 @@ app.use(morgan('combined'))
 // Middleware to enable access from different routes: https://www.section.io/engineering-education/how-to-use-cors-in-nodejs-with-express/ 
 //app.use(cors(corsOptions))
 
+//Auth 
+require('./auth')
+
 // Set routes middleware.
 appRouter(app)
 
