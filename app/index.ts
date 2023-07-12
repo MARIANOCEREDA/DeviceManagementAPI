@@ -1,8 +1,8 @@
+import argv from './util/arg_parser'
 import dotenv from 'dotenv'
 
 // Always import dotenv first
 dotenv.config()
-
 
 import express from 'express'
 import morgan from 'morgan'
@@ -11,7 +11,9 @@ import corsOptions from './util/cors_config'
 import config from './configs/config'
 import appRouter from './routes'
 import { errorHandler, logErrors } from './middlewares/errorHandler'
-import AuthHandler from './middlewares/authHandler'
+import cookieParser from 'cookie-parser'
+
+
 
 const app = express()
 
@@ -25,19 +27,31 @@ app.use(morgan('combined'))
 // Middleware to enable access from different routes: https://www.section.io/engineering-education/how-to-use-cors-in-nodejs-with-express/ 
 //app.use(cors(corsOptions))
 
-//Auth 
-require('./auth')
+switch(argv.auth){
+    case 'jwt':
+        console.log("Authentication method set to: JWT")
+        require('./auth');
+        break;
+    
+    case 'cookies':
+        console.log("Authentication method set to: Cookies")
+        app.use(cookieParser())
+        break;
+    
+    default:
+        console.log("Not auth method specifies, set by default to : json web token (jwt)");
+        require('./auth')
+        break;
+}
 
-// Set routes middleware.
+
 appRouter(app)
 
-// Log Error middlewares
+// Errr middlewares
 app.use(logErrors)
-
-// Error middleware
 app.use(errorHandler)
 
 
-app.listen(process.env.SERVER_PORT, ()=>{
-    console.log("Server listening to port: " + process.env.SERVER_PORT);
+app.listen(argv.port, ()=>{
+    console.log("Server listening to port: " + argv.port);
 })
