@@ -1,19 +1,14 @@
-import argv from './util/arg_parser'
-import dotenv from 'dotenv'
+import displayOptions from './util/arg_parser'
 
 // Always import dotenv first
-dotenv.config()
+require('dotenv').config()
 
 import express from 'express'
 import morgan from 'morgan'
-import cors from 'cors'
-import corsOptions from './util/cors_config'
 import config from './configs/config'
 import appRouter from './routes'
 import { errorHandler, logErrors } from './middlewares/errorHandler'
 import cookieParser from 'cookie-parser'
-
-
 
 const app = express()
 
@@ -27,7 +22,10 @@ app.use(morgan('combined'))
 // Middleware to enable access from different routes: https://www.section.io/engineering-education/how-to-use-cors-in-nodejs-with-express/ 
 //app.use(cors(corsOptions))
 
-switch(argv.auth){
+let {port, auth} = displayOptions()
+
+switch(auth){
+
     case 'jwt':
         console.log("Authentication method set to: JWT")
         require('./auth');
@@ -52,6 +50,6 @@ app.use(logErrors)
 app.use(errorHandler)
 
 
-app.listen(argv.port, ()=>{
-    console.log("Server listening to port: " + argv.port);
+app.listen(port, ()=>{
+    console.log("Server listening to port: " + port);
 })
