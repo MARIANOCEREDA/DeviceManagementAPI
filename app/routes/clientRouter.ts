@@ -4,20 +4,21 @@ import { validatorHandler } from '../middlewares/validationHandler';
 import { clientSchema } from '../joi/schemas/clientSchema';
 
 const router = express.Router()
-const controller = new ClientController();
 
 router.get('/', async (req:express.Request, res:express.Response, next:express.NextFunction)  =>{
-    await controller.listAll(req, res, next);
+    const controller = new ClientController();
+    await controller.getAll(req, res, next);
 })
 
-router.get('/:id', async (req:express.Request, res:express.Response, next:express.NextFunction)  =>{
-    await controller.listOne(req, res, next);
+router.get('/email', async (req:express.Request, res:express.Response, next:express.NextFunction)  =>{
+    const controller = new ClientController();
+    await controller.getOneByEmail(req, res, next);
 })
 
-router.post('/',
-validatorHandler(clientSchema, 'body'),
-async (req:express.Request, res:express.Response, next:express.NextFunction)  =>{
-    await controller.create(req, res, next);
+router.post('/', async (req:express.Request, res:express.Response, next:express.NextFunction)  =>{
+    const controller = new ClientController();
+    await controller.createOne(req, res, next);
 })
+
 
 export default router;

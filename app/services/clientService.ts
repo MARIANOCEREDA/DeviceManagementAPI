@@ -1,22 +1,19 @@
-import { Collection } from "mongodb"
-import { ConnectionPool } from "../db/mongo"
+import { Connection } from "../db/mongo"
 import createError from 'http-errors'
-import { v4 as uuidv4 } from 'uuid';
+import { ClientModel } from "../schemas/mongoose/clientSchema";
+import { v4 as uuid } from "uuid"
 
 class ClientService{
-    
-    private connection:ConnectionPool
-    private COLLECTION_NAME:string
 
     constructor(){
-        this.connection = new ConnectionPool();
-        this.COLLECTION_NAME = process.env.MONGO_COLLECTION_NAME!
+        new Connection().connect();
     }
 
     async find(){
-        const clients = (await this.connection.getCollection(this.COLLECTION_NAME)).find().toArray();
 
-        if((await clients).length == 0){
+        const clients = await ClientModel.find()
+
+        if(!clients){
             throw createError(404, 'Clients not found')
         }
 
@@ -27,11 +24,12 @@ class ClientService{
         return clients
     }
 
-    async findOneById(id:string){
-        const client = (await this.connection.getCollection(this.COLLECTION_NAME)).find({id:id});
+    async findOneByEmail(email:string): Promise<any>{
+
+        const client = await ClientModel.findOne({"email":email})
 
         if(!client){
-            throw createError(404, 'Client not found')
+            return []
         }
 
         if(client === null){
@@ -39,29 +37,31 @@ class ClientService{
         }
 
         return client
+
     }
 
-    async createOne(data){
+    async createOne(clientData:any){
 
-        let created:boolean = false
+        clientData["id"] = uuid()
 
-        while(!created){
-            
-            let id = uuidv4();
+        const client = await this.findOneByEmail(clientData["email"])
 
-            const client = (await this.connection.getCollection(this.COLLECTION_NAME)).find({id:id}).toArray();
+        console.log(client)
 
-            if((await client).length == 0){
-                const clientData = {
-                    id:id,
-                    ...data
-                }
-                const result = (await this.connection.getCollection(this.COLLECTION_NAME)).insertOne(clientData)
-                console.log(result)
-                created = true
-            }
-            
+        if (client.length != 0){
+            throw createError(401, `User with email ${clientData["email"]} already exists`)
         }
+
+        const newClient = new ClientModel(clientData)
+
+        try{
+            const created = await newClient.save()
+            console.log(created)
+            return created
+        }catch(error){
+            throw createError(500, "Not able to create User")
+        }
+
     }
 
 }

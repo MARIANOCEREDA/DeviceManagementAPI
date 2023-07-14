@@ -1,5 +1,6 @@
 import express from 'express'
 import { ClientService } from "../services/clientService"
+import createError from 'http-errors'
 
 class ClientController{
 
@@ -9,18 +10,7 @@ class ClientController{
         this.clientService = new ClientService();
     }
 
-    async create(req:express.Request, res:express.Response, next:express.NextFunction){
-        try {
-            const body = req.body;
-            console.log(body)
-            const created = await this.clientService.createOne(body)
-            res.status(200).json({createdUser:body})
-        } catch (error) {
-            next(error);
-        }
-    }
-
-    async listAll(req:express.Request, res:express.Response, next:express.NextFunction){
+    async getAll(req:express.Request, res:express.Response, next:express.NextFunction){
         try{
             const clients = await this.clientService.find();
             /* 200 “OK” – La respuesta para una solicitud HTTP exitosa. El resultado dependerá del tipo de solicitud. 
@@ -33,10 +23,39 @@ class ClientController{
         next()   
     }
 
-    async update(req:express.Request, res:express.Response, next:express.NextFunction){
+    async createOne(req:express.Request, res:express.Response, next:express.NextFunction){
+        try{
+            const clientData:any = req.body
+
+            console.log(clientData)
+
+            const client:any = await this.clientService.createOne(clientData);
+
+            return res.status(200).json({client:client})
+
+        }catch(error){
+            next(error)
+        }
+        next()   
     }
 
-    async listOne(req:express.Request, res:express.Response, next:express.NextFunction){
+    async getOneByEmail(req:express.Request, res:express.Response, next:express.NextFunction){
+        try{
+            const { email }:any = req.query
+
+            const client = await this.clientService.findOneByEmail(email);
+
+            if (client.length == 0){
+                throw createError(404, "Client not found.")
+            }
+            else{
+                return res.status(200).json({client:client})
+            }
+            
+        }catch(error){
+            next(error)
+        }
+        next()   
     }
 
 

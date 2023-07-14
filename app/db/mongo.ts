@@ -1,17 +1,21 @@
 import { Collection, MongoClient } from "mongodb";
+import mongoose from "mongoose";
 
-export class ConnectionPool {
+export class Connection {
 
     private uri: string;
 
     constructor() {
-      this.uri = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@empresa.isri2ju.mongodb.net/?authMechanism=DEFAULT`;
+      this.uri = `mongodb://127.0.0.1:27017/${process.env.MONGO_DB_NAME}`;
     }
-  
-    async getCollection(collectionName:string){
-        const connection = await MongoClient.connect(this.uri)
-        const db = connection.db(`${process.env.MONGO_DB_NAME}`)
-        const collection = db.collection(collectionName)
-        return collection
+
+    connect(){
+
+      try {
+        mongoose.connect(this.uri);
+      } catch (error) {
+        throw error
+      }
+      
     }
 }
