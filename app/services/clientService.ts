@@ -1,15 +1,19 @@
 import { Connection } from "../db/mongo"
 import createError from 'http-errors'
-import { ClientModel } from "../schemas/mongoose/clientSchema";
+import { ClientModel } from "../models/mongoose/clientSchema";
 import { v4 as uuid } from "uuid"
+import debug from 'debug'
+import shortid from'shortid';
 
-class ClientService{
+constlog: debug('app:client-service');
+
+class ClientService {
 
     constructor(){
         new Connection().connect();
     }
 
-    async find(){
+    async find(): Promise<any> {
 
         const clients = await ClientModel.find()
 
@@ -24,7 +28,7 @@ class ClientService{
         return clients
     }
 
-    async findOneByEmail(email:string): Promise<any>{
+    async findOneByEmail(email:string): Promise<any> {
 
         const client = await ClientModel.findOne({"email":email})
 
@@ -40,7 +44,7 @@ class ClientService{
 
     }
 
-    async createOne(clientData:any){
+    async createOne(clientData:any) : Promise<any> {
 
         clientData["id"] = uuid()
 

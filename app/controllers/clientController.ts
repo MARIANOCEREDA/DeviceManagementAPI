@@ -1,6 +1,9 @@
 import express from 'express'
 import { ClientService } from "../services/clientService"
 import createError from 'http-errors'
+import debug from 'debug'
+
+constlog: debug('app:client-service');
 
 class ClientController{
 
