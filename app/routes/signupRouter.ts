@@ -5,11 +5,30 @@ import { SignupController } from '../controllers/signupController';
 
 const router = express.Router();
 
-router.post('/',
-validatorHandler(signupSchema, 'body'),
-async(request:express.Request, response:express.Response, next:express.NextFunction) =>{
-    const controller = new SignupController();
-    await controller.createUser(request, response, next);
-});
+class SignupRouter {
 
-export default router;
+    private router:express.Router
+    private controller:SignupController
+
+    constructor(){
+        this.router = express.Router()
+        this.controller = new SignupController()
+    }
+
+    start(){
+
+        this.router.post('/',
+        validatorHandler(signupSchema, 'body'),
+        async(request:express.Request, response:express.Response, next:express.NextFunction) =>{
+            await this.controller.createUser(request, response, next);
+        });
+
+        return this.router
+
+    }
+
+}
+
+
+
+export { SignupRouter };

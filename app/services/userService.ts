@@ -1,5 +1,5 @@
 import mysql from 'mysql2/promise'
-import connectionPool from '../db/mysql'
+import { sqlize } from '../sequelize/sequelize'
 import crypto from 'crypto'
 import { v4 as uuid } from 'uuid'
 import createError from 'http-errors'
@@ -7,7 +7,6 @@ import { UserSignup } from '../interfaces/userSignup'
 import { HashPasswordObject } from '../interfaces/hashPasswordObject'
 import jwt from 'jsonwebtoken'
 import config  from '../configs/config'
-
 
 /**
  * @name UserService 
@@ -18,97 +17,66 @@ import config  from '../configs/config'
 
 class UserService {
 
-    private connection:mysql.Pool
-    private dbName:string
-    private dbTableName:string
+    private models:any
 
     constructor(){
-        this.connection = connectionPool
-        this.dbName = process.env.MYSQL_DB_NAME!
-        this.dbTableName = process.env.MYSQL_USERS_TABLENAME!
+        this.models = sqlize.models
     }
 
     async create(userData:UserSignup) : Promise<any> {
 
-        let connection:mysql.PoolConnection
-
-        try{
-            connection = await this.connection.getConnection()
-        }catch(error){
-            throw createError(500, "Not able to connect to the Database.")
-        }
 
         const { salt, password } = this.hashPassword(userData.password);
-
-        const query = `INSERT INTO ${this.dbName}.${this.dbTableName} (FirstName, LastName, Username, PhoneNumber, State, City,
-                        Country, PasswordHash, UserId, Salt, Email, Age) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`
         
         let userId = this.generateUUID();
 
         let userFound = await this.getUserByUsername(userData.username)
 
-        const dataToInsert = [
-            userData.firstName,
-            userData.lastName,
-            userData.username,
-            userData.phoneNumber,
-            userData.state,
-            userData.city,
-            userData.country,
-            password,
-            userId,
-            salt,
-            userData.email,
-            userData.age]
+        const dataToInsert = {
+            ...userData,
+            passwordHash:password,
+            userId:userId,
+            salt:salt,
+        }
 
-        if(userFound.length === 0){
-            return await connection.execute(query, dataToInsert)
-        }else{
+        try{
+            const userInserted = await this.models.User.create(dataToInsert)
+            return userInserted
+
+        }catch(error){
             throw createError(409, "Username: " + userData.username + " already exists.")
         }
     }
 
     async getUserById(id:String) : Promise<Array<any>> {
 
-        let connection:mysql.PoolConnection
+        const user = await this.models.User.findByPk(id)
 
-        try{
-            connection = await this.connection.getConnection()
-        }catch(error){
+        if (!user) {
             throw createError(500, "Not able to connect to the Database.")
         }
 
-        const query = `SELECT UserId FROM ${this.dbName}.${this.dbTableName} WHERE UserId = ${id}`
+        delete user.dataValues.Password
+        delete user.dataValues.PasswordHash
 
-        const [rows,] = await connection.execute(query) as any
-
-        if (rows.length == 1) {
-            return rows
-        }else{
-            return []
-        }
+        return user
 
     }
 
     async getUserByUsername(username:string) : Promise<Array<any>> {
 
-        let connection:mysql.PoolConnection
+        const user = await this.models.User.findOne({
+            where:{ username }
+        })
 
-        try{
-            connection = await this.connection.getConnection()
-        }catch(error){
+        if (!user) {
             throw createError(500, "Not able to connect to the Database.")
         }
 
-        const query = `SELECT Username FROM ${this.dbName}.${this.dbTableName} WHERE Username = '${username}'`
+        delete user.dataValues.Password
+        delete user.dataValues.PasswordHash
 
-        const [rows,] = await connection.query(query) as any
-
-        if (rows.length == 1) {
-            return rows
-        }else{
-            return []
-        }
+        return user
 
     }
 
@@ -116,27 +84,22 @@ class UserService {
 
         const user = await this.getUserByUsername(username)
 
-        let connection:mysql.PoolConnection
-
-        try{
-            connection = await this.connection.getConnection()
-        }catch(error){
-            throw createError(500, "Not able to connect to the Database.")
-        }
-
-        if(user.length === 0){
+        if(!user){
             throw createError(404, "User not found.")
+
         }else{
-            const getDataQuery = `SELECT PasswordHash, Salt, UserId FROM ${this.dbName}.${this.dbTableName} WHERE Username = '${username}'`
 
-            const [rows,] = await connection.query(getDataQuery) as any;
+            const userAuthData = await this.models.User.findOne({
+                attributes:["PasswordHash", "Salt", "UserId"],
+                where:{ Username:username }
+            })
 
-            const incomingHashedPassword = this.hashPasswordWithSalt(password, rows[0].Salt)
+            const incomingHashedPassword = this.hashPasswordWithSalt(password, userAuthData.dataValues.Salt)
 
-            if(incomingHashedPassword === rows[0].PasswordHash){
+            if(incomingHashedPassword === userAuthData.dataValues.PasswordHash){
 
                 const payload = { 
-                    sub:rows[0].UserId,
+                    sub:userAuthData.dataValues.UserId,
                     username: username,
                     iat: Date.now()
                 };
@@ -153,40 +116,65 @@ class UserService {
 
     async getToken(username:string) : Promise<any> {
 
-        let connection:mysql.PoolConnection
-
         try{
-            connection = await this.connection.getConnection()
+
+            const token = await this.models.User.findOne({
+                attributes:["Token"],
+                where:{ Username:username }
+            })
+
+            return token
+
         }catch(error){
-            throw createError(500, "Not able to connect to the Database.")
-        }
-
-        const query = `SELECT Token FROM ${this.dbName}.${this.dbTableName} WHERE Username = '${username}'`
-
-        const [result,] = await connection.query(query) as any
-
-        if(result[0].Token){
-            return result[0].Token
-        }else{
             throw createError(401, "Token was not found.")
+
         }
     }
 
     async getAll() : Promise<any> {
 
-        let connection:mysql.PoolConnection
+        try {
+            const users = await this.models.User.findAll({
+                attributes: ['Username', 'Email', 'FirstName', 'LastName', 'City', 'PhoneNumber'],
+            });
 
-        try{
-            connection = await this.connection.getConnection()
-        }catch(error){
-            throw createError(500, "Not able to connect to the Database.")
+            if (users.length === 0) {
+                throw createError(404, "Users not found.")
+            } else {
+                return users
+            }
+
+        } catch (error) {
+            throw createError(401, "Error when trying to fetch users.")
+        }
+    }
+
+    async update(userNewData:any): Promise<any> {
+
+        try {
+            
+            const userExists = await this.getUserByUsername(userNewData.username)
+
+            if(userExists){
+
+                const updatedUser = await this.models.User.update(
+                    userNewData,
+                    {where: { username:userNewData.username }}
+                );
+
+                if (updatedUser){
+                    return userNewData
+                }
+
+            }else{
+                return null
+            }
+
+        } catch (error) {
+            throw error
+            // throw createError(401, "Error when trying to fetch users.")
         }
 
-        const query = `SELECT * FROM ${this.dbName}.${this.dbTableName}`
-
-        const [result,] = await connection.query(query) as any
- 
-        return result
     }
 
     private generateUUID():string{

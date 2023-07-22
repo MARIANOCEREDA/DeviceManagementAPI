@@ -9,7 +9,7 @@ class UserController {
         this.service = new UserService()
     }
 
-    async listAll(req:express.Request, res:express.Response, next:express.NextFunction){
+    findAll = async (req:express.Request, res:express.Response, next:express.NextFunction) => {
         try{
 
             const users:any = await this.service.getAll();
@@ -22,10 +22,26 @@ class UserController {
         next()   
     }
 
-    async update(req:express.Request, res:express.Response, next:express.NextFunction){
+    update = async (req:express.Request, res:express.Response, next:express.NextFunction) => {
+
+        try {
+
+            const userNewData = req.body 
+
+            const updatedUser:any = await this.service.update(userNewData)
+
+            if(updatedUser){
+                return res.status(200).json({userUpdated:updatedUser})
+            }
+            
+        } catch (error) {
+            next(error)
+        }
+
+
     }
 
-    async listOne(req:express.Request, res:express.Response, next:express.NextFunction){
+    findOne = (req:express.Request, res:express.Response, next:express.NextFunction) => {
     }
 
 

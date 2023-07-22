@@ -3,22 +3,34 @@ import {ClientController} from '../controllers/clientController'
 import { validatorHandler } from '../middlewares/validationHandler';
 import { clientSchema } from '../joi/schemas/clientSchema';
 
-const router = express.Router()
 
-router.get('/', async (req:express.Request, res:express.Response, next:express.NextFunction)  =>{
-    const controller = new ClientController();
-    await controller.getAll(req, res, next);
-})
+class ClientRouter{
 
-router.get('/email', async (req:express.Request, res:express.Response, next:express.NextFunction)  =>{
-    const controller = new ClientController();
-    await controller.getOneByEmail(req, res, next);
-})
+    private router:express.Router
+    private controller:ClientController
 
-router.post('/', async (req:express.Request, res:express.Response, next:express.NextFunction)  =>{
-    const controller = new ClientController();
-    await controller.createOne(req, res, next);
-})
+    constructor(){
+        this.controller = new ClientController();
+        this.router = express.Router()
+    }
 
+    start(){
 
-export default router;
+        this.router.get('/', async (req:express.Request, res:express.Response, next:express.NextFunction)  =>{
+            await this.controller.getAll(req, res, next);
+        })
+        
+        this.router.get('/email', async (req:express.Request, res:express.Response, next:express.NextFunction)  =>{
+            await this.controller.getOneByEmail(req, res, next);
+        })
+        
+        this.router.post('/', async (req:express.Request, res:express.Response, next:express.NextFunction)  =>{
+            await this.controller.createOne(req, res, next);
+        })
+
+        return this.router
+    }
+
+}
+
+export {ClientRouter};

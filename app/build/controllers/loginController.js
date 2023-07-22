@@ -17,6 +17,7 @@ class LoginController {
     }
     login(request, response, next) {
         return __awaiter(this, void 0, void 0, function* () {
+            //response.json(request.user.toAuthJSON())
             try {
                 const loginData = request.body;
                 const result = yield this.service.authenticate(loginData.username, loginData.password);

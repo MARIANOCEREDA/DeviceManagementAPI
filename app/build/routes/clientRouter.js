@@ -14,17 +14,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const clientController_1 = require("../controllers/clientController");
-const validationHandler_1 = require("../middlewares/validationHandler");
-const clientSchema_1 = require("../joi/schemas/clientSchema");
 const router = express_1.default.Router();
-const controller = new clientController_1.ClientController();
 router.get('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    yield controller.listAll(req, res, next);
+    const controller = new clientController_1.ClientController();
+    yield controller.getAll(req, res, next);
 }));
-router.get('/:id', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    yield controller.listOne(req, res, next);
+router.get('/email', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const controller = new clientController_1.ClientController();
+    yield controller.getOneByEmail(req, res, next);
 }));
-router.post('/', (0, validationHandler_1.validatorHandler)(clientSchema_1.clientSchema, 'body'), (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
-    yield controller.create(req, res, next);
+router.post('/', (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const controller = new clientController_1.ClientController();
+    yield controller.createOne(req, res, next);
 }));
 exports.default = router;

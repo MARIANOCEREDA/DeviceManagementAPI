@@ -2,10 +2,9 @@ import { Connection } from "../db/mongo"
 import createError from 'http-errors'
 import { ClientModel } from "../models/mongoose/clientSchema";
 import { v4 as uuid } from "uuid"
-import debug from 'debug'
-import shortid from'shortid';
+import createLogger from "../configs/logger";
 
-constlog: debug('app:client-service');
+const log = createLogger('client-service')
 
 class ClientService {
 
@@ -33,7 +32,7 @@ class ClientService {
         const client = await ClientModel.findOne({"email":email})
 
         if(!client){
-            return []
+            return null
         }
 
         if(client === null){
@@ -50,9 +49,9 @@ class ClientService {
 
         const client = await this.findOneByEmail(clientData["email"])
 
-        console.log(client)
+        log.debug(client)
 
-        if (client.length != 0){
+        if (client != null){
             throw createError(401, `User with email ${clientData["email"]} already exists`)
         }
 
@@ -60,8 +59,11 @@ class ClientService {
 
         try{
             const created = await newClient.save()
-            console.log(created)
+
+            log.debug("Created client result: " + created)
+
             return created
+
         }catch(error){
             throw createError(500, "Not able to create User")
         }

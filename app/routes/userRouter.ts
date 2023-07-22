@@ -4,13 +4,31 @@ import passport from 'passport'
 
 const router = express.Router()
 
-router.get('/',
-passport.authenticate("jwt", {session: false}),
-async (request:express.Request, response:express.Response, next:express.NextFunction) =>{
-    const controller = new UserController()
-    await controller.listAll(request, response, next);
-})
+class UserRouter {
+
+    private router:express.Router
+    private controller:UserController
+
+    constructor(){
+        this.controller = new UserController();
+        this.router = express.Router()
+    }
+
+    start(){
+
+        this.router.get('/',
+            passport.authenticate("jwt", {session: false}),
+            this.controller.findAll
+        )
+
+        this.router.patch('/',
+            passport.authenticate("jwt", {session: false}),
+            this.controller.update
+        )
+
+        return this.router
+    }
+}
 
 
-
-export default router;
+export { UserRouter };

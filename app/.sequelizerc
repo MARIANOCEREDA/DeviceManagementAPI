@@ -1,0 +1,7 @@
+
+export default {
+  'config': './sequelize/config/config.json',
+  'models-path': './sequelize/models/',
+  'migrations-path': './sequelize/migrations/',
+  'seeders-path': './sequelize/seeders/',
+}

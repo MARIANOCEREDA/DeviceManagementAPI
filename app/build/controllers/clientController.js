@@ -8,27 +8,20 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientController = void 0;
 const clientService_1 = require("../services/clientService");
+const http_errors_1 = __importDefault(require("http-errors"));
+const debug_1 = __importDefault(require("debug"));
+constlog: (0, debug_1.default)('app:client-service');
 class ClientController {
     constructor() {
         this.clientService = new clientService_1.ClientService();
     }
-    create(req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const body = req.body;
-                console.log(body);
-                const created = yield this.clientService.createOne(body);
-                res.status(200).json({ createdUser: body });
-            }
-            catch (error) {
-                next(error);
-            }
-        });
-    }
-    listAll(req, res, next) {
+    getAll(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const clients = yield this.clientService.find();
@@ -43,12 +36,36 @@ class ClientController {
             next();
         });
     }
-    update(req, res, next) {
+    createOne(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const clientData = req.body;
+                console.log(clientData);
+                const client = yield this.clientService.createOne(clientData);
+                return res.status(200).json({ client: client });
+            }
+            catch (error) {
+                next(error);
+            }
+            next();
         });
     }
-    listOne(req, res, next) {
+    getOneByEmail(req, res, next) {
         return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { email } = req.query;
+                const client = yield this.clientService.findOneByEmail(email);
+                if (client.length == 0) {
+                    throw (0, http_errors_1.default)(404, "Client not found.");
+                }
+                else {
+                    return res.status(200).json({ client: client });
+                }
+            }
+            catch (error) {
+                next(error);
+            }
+            next();
         });
     }
 }

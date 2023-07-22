@@ -15,16 +15,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientService = void 0;
 const mongo_1 = require("../db/mongo");
 const http_errors_1 = __importDefault(require("http-errors"));
+const clientSchema_1 = require("../models/mongoose/clientSchema");
 const uuid_1 = require("uuid");
+const debug_1 = __importDefault(require("debug"));
+constlog: (0, debug_1.default)('app:client-service');
 class ClientService {
     constructor() {
-        this.connection = new mongo_1.ConnectionPool();
-        this.COLLECTION_NAME = process.env.MONGO_COLLECTION_NAME;
+        new mongo_1.Connection().connect();
     }
     find() {
         return __awaiter(this, void 0, void 0, function* () {
-            const clients = (yield this.connection.getCollection(this.COLLECTION_NAME)).find().toArray();
-            if ((yield clients).length == 0) {
+            const clients = yield clientSchema_1.ClientModel.find();
+            if (!clients) {
                 throw (0, http_errors_1.default)(404, 'Clients not found');
             }
             if (clients === null) {
@@ -33,11 +35,11 @@ class ClientService {
             return clients;
         });
     }
-    findOneById(id) {
+    findOneByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            const client = (yield this.connection.getCollection(this.COLLECTION_NAME)).find({ id: id });
+            const client = yield clientSchema_1.ClientModel.findOne({ "email": email });
             if (!client) {
-                throw (0, http_errors_1.default)(404, 'Client not found');
+                return [];
             }
             if (client === null) {
                 throw (0, http_errors_1.default)(500, 'Not able to connect to database');
@@ -45,18 +47,22 @@ class ClientService {
             return client;
         });
     }
-    createOne(data) {
+    createOne(clientData) {
         return __awaiter(this, void 0, void 0, function* () {
-            let created = false;
-            while (!created) {
-                let id = (0, uuid_1.v4)();
-                const client = (yield this.connection.getCollection(this.COLLECTION_NAME)).find({ id: id }).toArray();
-                if ((yield client).length == 0) {
-                    const clientData = Object.assign({ id: id }, data);
-                    const result = (yield this.connection.getCollection(this.COLLECTION_NAME)).insertOne(clientData);
-                    console.log(result);
-                    created = true;
-                }
+            clientData["id"] = (0, uuid_1.v4)();
+            const client = yield this.findOneByEmail(clientData["email"]);
+            console.log(client);
+            if (client.length != 0) {
+                throw (0, http_errors_1.default)(401, `User with email ${clientData["email"]} already exists`);
+            }
+            const newClient = new clientSchema_1.ClientModel(clientData);
+            try {
+                const created = yield newClient.save();
+                console.log(created);
+                return created;
+            }
+            catch (error) {
+                throw (0, http_errors_1.default)(500, "Not able to create User");
             }
         });
     }

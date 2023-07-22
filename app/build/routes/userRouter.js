@@ -16,7 +16,7 @@ const express_1 = __importDefault(require("express"));
 const userController_1 = require("../controllers/userController");
 const passport_1 = __importDefault(require("passport"));
 const router = express_1.default.Router();
-router.get('/', passport_1.default.authenticate('jwt', { session: false }), (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
+router.get('/', passport_1.default.authenticate("jwt", { session: false }), (request, response, next) => __awaiter(void 0, void 0, void 0, function* () {
     const controller = new userController_1.UserController();
     yield controller.listAll(request, response, next);
 }));

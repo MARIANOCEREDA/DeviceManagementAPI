@@ -1,0 +1,18 @@
+[2023-07-19T20:32:01.991] [DEBUG] C:\Users\merem\OneDrive\Documentos\Proyectos\SimpleAPI\SimpleAPI\app\services\clientService.ts - null
+[2023-07-19T20:32:02.016] [DEBUG] C:\Users\merem\OneDrive\Documentos\Proyectos\SimpleAPI\SimpleAPI\app\services\clientService.ts - Created client result: {
+  id: '3a4afb1c-9a6e-495d-8bd6-07f0956848b1',
+  name: 'valeria',
+  age: '36',
+  email: 'valeria@yahoo.com',
+  _id: new ObjectId("64b872718872fbd54b4b1528"),
+  __v: 0
+}
+[2023-07-19T20:33:35.343] [DEBUG] client-service - null
+[2023-07-19T20:33:35.356] [DEBUG] client-service - Created client result: {
+  id: '95e10899-e28c-4dd3-9cff-1a9547c39449',
+  name: 'valentina',
+  age: '36',
+  email: 'valeria-925@yahoo.com',
+  _id: new ObjectId("64b872cf2989b68bb31e6e13"),
+  __v: 0
+}
