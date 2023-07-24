@@ -5,19 +5,18 @@ require('dotenv').config()
 
 import express from 'express'
 import morgan from 'morgan'
-import config from './configs/config'
-import {appRouter, notAuthRoutes } from './routes'
+import config from './configs/index'
+import { appRouter, notAuthRoutes } from './routes'
 import { errorHandler, logErrors } from './middlewares/errorHandler'
 import { setAuthenticationMethod } from './auth'
-import cookieParser from 'cookie-parser'
 
 const app = express()
 
-let { port, auth } = displayOptions()
+let { port , auth } = displayOptions()
 
 app.use(express.json())
 
-app.set('key', config)
+app.set('key', config.jwt.key)
 
 // Middleware for logging : https://www.npmjs.com/package/morgan
 app.use(morgan('combined'))

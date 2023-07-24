@@ -1,8 +1,6 @@
 import express from 'express'
 import { UserService } from '../services/userService';
 import { UserLogin } from '../interfaces/userLogin';
-import jwt from 'jsonwebtoken'
-import config  from '../configs/config'
 
 class LoginController{
 
@@ -13,8 +11,6 @@ class LoginController{
     }
 
     async login(request:express.Request, response:express.Response, next:express.NextFunction){
-
-       //response.json(request.user.toAuthJSON())
 
         try {
             

@@ -109,5 +109,5 @@
   },
   "include": [
     "./**/**/*.ts"
-  ]
+, "tests/login.test.js"  ]
 }

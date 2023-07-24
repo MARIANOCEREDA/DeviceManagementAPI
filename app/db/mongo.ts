@@ -1,4 +1,4 @@
-import { Collection, MongoClient } from "mongodb";
+import config from "../configs";
 import mongoose from "mongoose";
 
 export class Connection {
@@ -6,7 +6,7 @@ export class Connection {
     private uri: string;
 
     constructor() {
-      this.uri = `mongodb://127.0.0.1:27017/${process.env.MONGO_DB_NAME}`;
+      this.uri = `mongodb://${config.mongo.dbHost}:${config.mongo.port}/`;
     }
 
     connect(){

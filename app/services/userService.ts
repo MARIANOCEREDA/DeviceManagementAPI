@@ -6,7 +6,7 @@ import createError from 'http-errors'
 import { UserSignup } from '../interfaces/userSignup'
 import { HashPasswordObject } from '../interfaces/hashPasswordObject'
 import jwt from 'jsonwebtoken'
-import config  from '../configs/config'
+import config from '../configs'
 
 /**
  * @name UserService 
@@ -104,7 +104,7 @@ class UserService {
                     iat: Date.now()
                 };
 
-                const token = jwt.sign(payload, config.key, { expiresIn:1440 })
+                const token = jwt.sign(payload, config.jwt.key, { expiresIn:1440 })
 
                 return { auth:true, token:token }
 

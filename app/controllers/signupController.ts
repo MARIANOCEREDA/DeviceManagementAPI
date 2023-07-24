@@ -1,4 +1,3 @@
-import mysql from 'mysql2/promise'
 import express from 'express'
 import { UserService } from '../services/userService'
 import { UserSignup } from '../interfaces/userSignup'
