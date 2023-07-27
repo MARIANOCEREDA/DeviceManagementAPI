@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "dev": "set NODE_ENV=development && ts-node-dev index.ts",
+    "dev": "set NODE_ENV=development&& ts-node-dev index.ts -- --port 3000",
     "build": "tsc",
     "start": "node build/index.js -- --port 3000",
     "build-babel": "babel . -d lib",
-    "test": "set NODE_ENV=test && mocha tests/*.js --timeout 15000",
+    "test": "set NODE_ENV=test&& mocha tests/*.js --timeout 15000",
     "coverage": "nyc mocha tests/*.js --timeout 15000 --coverage"
   },
   "directories": {

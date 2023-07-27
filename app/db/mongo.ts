@@ -6,7 +6,7 @@ export class Connection {
     private uri: string;
 
     constructor() {
-      this.uri = `mongodb://${config.mongo.dbHost}:${config.mongo.port}/`;
+      this.uri = `mongodb://${config.mongo.dbHost}:${config.mongo.port}/${config.mongo.dbName}`;
     }
 
     connect(){

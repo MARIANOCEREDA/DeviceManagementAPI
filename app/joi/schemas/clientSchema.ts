@@ -5,5 +5,6 @@ import Joi from 'joi'
 export const clientSchema = Joi.object({
     firstName:Joi.string().required(),
     lastName:Joi.string().required(),
-    age:Joi.number().required()
+    age:Joi.number().required(),
+    email:Joi.string().email().required()
 })

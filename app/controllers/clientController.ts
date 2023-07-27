@@ -10,7 +10,7 @@ class ClientController{
         this.clientService = new ClientService();
     }
 
-    async getAll(req:express.Request, res:express.Response, next:express.NextFunction){
+    findAll = async (req:express.Request, res:express.Response, next:express.NextFunction) => {
         try{
             const clients = await this.clientService.find();
             /* 200 “OK” – La respuesta para una solicitud HTTP exitosa. El resultado dependerá del tipo de solicitud. 
@@ -23,23 +23,7 @@ class ClientController{
         next()   
     }
 
-    async createOne(req:express.Request, res:express.Response, next:express.NextFunction){
-        try{
-            const clientData:any = req.body
-
-            console.log(clientData)
-
-            const client:any = await this.clientService.createOne(clientData);
-
-            return res.status(200).json({client:client})
-
-        }catch(error){
-            next(error)
-        }
-        next()   
-    }
-
-    async getOneByEmail(req:express.Request, res:express.Response, next:express.NextFunction){
+    findOneByEmail = async (req:express.Request, res:express.Response, next:express.NextFunction) => {
         try{
             const { email }:any = req.query
 
@@ -58,6 +42,57 @@ class ClientController{
         next()   
     }
 
+    create = async (req:express.Request, res:express.Response, next:express.NextFunction) => {
+        try{
+            const clientData:any = req.body
+
+            console.log(clientData)
+
+            const client:any = await this.clientService.create(clientData);
+
+            return res.status(200).json({client:client})
+
+        }catch(error){
+            next(error)
+        }
+        next()   
+    }
+
+    update = async (req:express.Request, res:express.Response, next:express.NextFunction) =>{
+
+        try {
+
+            const clientData:any = req.body
+            const { email } = req.params
+
+            const updatedClient = await this.clientService.update(clientData, email)
+
+            if(updatedClient != null){
+                res.status(200).json({updatedClient:updatedClient})
+            }
+            
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    delete = async (req:express.Request, res:express.Response, next:express.NextFunction) => {
+        
+        try {
+
+            const { email } = req.params
+
+            const deletedClient = await this.clientService.delete(email)
+
+            if(deletedClient != null){
+                res.status(200).json({deletedClient:deletedClient})
+            }
+            
+        } catch (error) {
+            next(error)
+        }
+
+    }
 
 }
 

@@ -1,5 +1,5 @@
 import express from 'express'
-import {ClientController} from '../controllers/clientController'
+import { ClientController } from '../controllers/clientController'
 import { validatorHandler } from '../middlewares/validationHandler';
 import { clientSchema } from '../joi/schemas/clientSchema';
 
@@ -16,17 +16,18 @@ class ClientRouter{
 
     start(){
 
-        this.router.get('/', async (req:express.Request, res:express.Response, next:express.NextFunction)  =>{
-            await this.controller.getAll(req, res, next);
-        })
+        this.router.get('/', this.controller.findAll)
         
-        this.router.get('/email', async (req:express.Request, res:express.Response, next:express.NextFunction)  =>{
-            await this.controller.getOneByEmail(req, res, next);
-        })
+        this.router.get('/email', this.controller.findOneByEmail)
         
-        this.router.post('/', async (req:express.Request, res:express.Response, next:express.NextFunction)  =>{
-            await this.controller.createOne(req, res, next);
-        })
+        this.router.post(
+            '/',
+            validatorHandler(clientSchema, 'body'),
+            this.controller.create)
+
+        this.router.put('/:email', this.controller.update)
+
+        this.router.delete('/:email', this.controller.delete)
 
         return this.router
     }
