@@ -16,7 +16,7 @@ class ClientRouter{
 
     start(){
 
-        this.router.get('/', this.controller.findAll)
+        this.router.get('/',this.controller.findAll)
         
         this.router.get('/email', this.controller.findOneByEmail)
         
@@ -28,6 +28,13 @@ class ClientRouter{
         this.router.put('/:email', this.controller.update)
 
         this.router.delete('/:email', this.controller.delete)
+
+        return this.router
+    }
+
+    startHelpers(){
+
+        this.router.get('/fakeClient', this.controller.getFakeClient)
 
         return this.router
     }

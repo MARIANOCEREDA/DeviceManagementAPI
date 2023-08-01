@@ -1,4 +1,3 @@
-import mysql from 'mysql2/promise'
 import { sqlize } from '../sequelize/sequelize'
 import crypto from 'crypto'
 import { v4 as uuid } from 'uuid'
@@ -24,7 +23,6 @@ class UserService {
     }
 
     async create(userData:UserSignup) : Promise<any> {
-
 
         const { salt, password } = this.hashPassword(userData.password);
         

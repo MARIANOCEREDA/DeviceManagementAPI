@@ -1,6 +1,7 @@
 import express from 'express'
 import { ClientService } from "../services/clientService"
 import createError from 'http-errors'
+import createFakeClient from '../util/faker/createFakeClient'
 
 class ClientController{
 
@@ -91,6 +92,12 @@ class ClientController{
         } catch (error) {
             next(error)
         }
+
+    }
+
+    getFakeClient = async (req:express.Request, res:express.Response, next:express.NextFunction) => {
+
+        res.json({fakeClient:createFakeClient()})
 
     }
 

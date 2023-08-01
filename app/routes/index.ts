@@ -7,10 +7,15 @@ import googleAuthRouter from './auth/googleAuthRouter'
 
 
 function appRouter(app:express.Application){
-    const router = express.Router()
 
     const clientRouter = new ClientRouter()
     const userRouter = new UserRouter()
+
+    const routerHelper = express.Router()
+    app.use('/helpers', routerHelper)
+    routerHelper.use('/client', clientRouter.startHelpers())
+
+    const router = express.Router()
 
     app.use('/api/v1', router)
     router.use('/user', userRouter.start())
