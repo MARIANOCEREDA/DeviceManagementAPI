@@ -13,6 +13,9 @@ class DeviceService {
         this.models = sqlize.models
     }
 
+    async create(){
+        
+    }
 
 }
 
