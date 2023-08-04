@@ -1,8 +1,9 @@
-import { Model,DataTypes,Sequelize } from 'sequelize'
+import { Model,DataTypes,Sequelize, InitOptions, ModelAttributes } from 'sequelize'
+import config from '../../configs'
 
-const USER_TABLE = process.env.MYSQL_DB_USERS_TABLENAME
+const USER_TABLE = config.mysql.userTableName
 
-const UserModel = {
+const UserModel:ModelAttributes = {
 
     id:{
         allowNull:false,
@@ -15,14 +16,18 @@ const UserModel = {
         field:'FirstName',
         type:DataTypes.STRING,
         allowNull:false,
-        length:255
+        validate:{
+            max:255
+        }
     },
   
     lastName:{
         field:'LastName',
         type:DataTypes.STRING,
         allowNull:false,
-        length:255
+        validate:{
+            max:255
+        }
     },
 
     username:{
@@ -30,49 +35,55 @@ const UserModel = {
         type:DataTypes.STRING,
         allowNull:false,
         unique:true,
-        length:45
+        validate:{
+            min:10,
+            max:100
+        }
     },
 
     phoneNumber:{
         field:'PhoneNumber',
         allowNull:true,
         type:DataTypes.STRING,
-        length:255
     },
 
     state:{
         field:'State',
         allowNull:true,
         type:DataTypes.STRING,
-        length:255
+        validate:{
+            max:255
+        }
     },
 
     city:{
         field:'City',
         allowNull:true,
         type:DataTypes.STRING,
-        length:255
+        validate:{
+            max:255
+        }
     },
 
     country:{
         field:'Country',
         allowNull:true,
         type:DataTypes.STRING,
-        length:255
+        validate:{
+            max:255
+        }
     },
 
     passwordHash:{
         field:'PasswordHash',
         allowNull:false,
         type:DataTypes.STRING,
-        length:256
     },
 
     cookieId:{
         field:'CookieId',
         allowNull:true,
         type:DataTypes.STRING,
-        length:255
     },
 
     userId:{
@@ -80,14 +91,12 @@ const UserModel = {
         allowNull:false,
         unique:true,
         type:DataTypes.STRING,
-        length:255
     },
 
     salt:{
         field:'Salt',
         allowNull:false,
         type:DataTypes.STRING,
-        length:255
     },
 
     age:{
@@ -101,7 +110,6 @@ const UserModel = {
         allowNull:false,
         type:DataTypes.STRING,
         unique: true, //Para que no haya emails iguales
-        length:100
     },
 
     refreshToken:{
@@ -111,7 +119,7 @@ const UserModel = {
     },
 
     createdAt:{
-        filed:'CreatedAt',
+        field:'CreatedAt',
         allowNull:false,
         type:DataTypes.DATE,
         defaultValue:DataTypes.NOW
@@ -119,16 +127,23 @@ const UserModel = {
 
 }
 
-class User extends Model{
+class User extends Model {
 
-
-    static config(sequelize){
-        return{
+    static config(sequelize) : InitOptions<User> {
+        return {
             sequelize,
             tableName:USER_TABLE,
             modelName:'User',
             timestamps:false
         }
+    }
+
+    static associate(models) : void {
+
+        this.hasMany(models.Device, {
+            as:'UserHasDevices',
+            foreignKey:'userId'
+        })
     }
 
 }
