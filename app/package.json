@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
-
   "scripts": {
     "dev": "set NODE_ENV=development&& nodemon index.js -- --port 3000",
     "build": "tsc",
@@ -28,6 +27,7 @@
   "dependencies": {
     "@hapi/boom": "^10.0.1",
     "argparse": "^2.0.1",
+    "babel-register": "^6.26.0",
     "chai": "^4.3.7",
     "chai-http": "^4.4.0",
     "cookie-parser": "^1.4.6",

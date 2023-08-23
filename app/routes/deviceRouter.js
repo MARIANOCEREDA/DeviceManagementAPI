@@ -1,5 +1,7 @@
 import express from 'express'
 import { DeviceController } from '../controllers/deviceController.js';
+import { deviceSchema } from '../joi/schemas/deviceSchema.js';
+import { validatorHandler } from '../middlewares/validationHandler.js';
 
 class DeviceRouter{
 
@@ -10,9 +12,13 @@ class DeviceRouter{
 
     start(){
 
+        this.router.post('/',
+                        validatorHandler(deviceSchema, 'body'),
+                        this.controller.create)
+
         return this.router
     }
 
 }
 
-export default DeviceRouter
+export { DeviceRouter }

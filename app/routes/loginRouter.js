@@ -13,10 +13,10 @@ class LoginRouter{
     start(){
 
         this.router.post('/', 
-        validatorHandler(loginSchema, 'body'),
-        async(request, response, next)=>{
-            await this.controller.login(request, response, next);
-        });
+                        validatorHandler(loginSchema, 'body'),
+                        async(request, response, next)=>{
+                            await this.controller.login(request, response, next);
+                        });
 
         return this.router
 

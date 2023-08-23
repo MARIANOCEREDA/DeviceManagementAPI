@@ -1,5 +1,6 @@
 'use strict';
 
+/** @type {import('sequelize-cli').Migration} */
 const { DEVICE_TABLE, DeviceModel } = require('../models/deviceModel')
 
 module.exports = {
@@ -11,7 +12,7 @@ module.exports = {
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
 
-    await queryInterface.createTable( DEVICE_TABLE, DeviceModel)
+    await queryInterface.createTable(DEVICE_TABLE, DeviceModel)
   },
 
   async down (queryInterface, Sequelize) {
@@ -21,7 +22,8 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-
-    await queryInterface.dropTable( DEVICE_TABLE )
+    
+    await queryInterface.dropTable(DEVICE_TABLE)
   }
 };
+

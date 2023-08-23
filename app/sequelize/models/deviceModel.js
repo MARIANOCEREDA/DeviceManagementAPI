@@ -7,6 +7,7 @@ const DEVICE_TABLE = config.mysql.deviceTableName
 const DeviceModel = {
 
     id:{
+        field:'id',
         allowNull:false,
         autoIncrement:true,
         primaryKey:true,
@@ -14,21 +15,21 @@ const DeviceModel = {
     },
 
     deviceId:{
-        field:'uuid',
+        field:'DeviceId',
         allowNull:false,
         unique:true,
         type:DataTypes.UUID
     },
 
     name:{
-        field:'name',
+        field:'Name',
         allowNull:false,
         unique:true,
         type:DataTypes.STRING
     },
 
     userId:{
-        field:'userId',
+        field:'UserId',
         allowNull:false,
         type:DataTypes.INTEGER,
         references:{
@@ -40,14 +41,14 @@ const DeviceModel = {
     },
     
     createdAt:{
-        field:'createdAt',
+        field:'CreatedAt',
         allowNull:false,
         type:DataTypes.TIME,
         defaultValue:DataTypes.NOW
     },
 
     updatedAt:{
-        field:'updatedAt',
+        field:'UpdatedAt',
         type:DataTypes.DATE,
         allowNull:false,
         defaultValue:DataTypes.NOW

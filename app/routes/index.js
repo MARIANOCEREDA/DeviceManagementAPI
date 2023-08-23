@@ -3,6 +3,7 @@ import { UserRouter } from './userRouter.js'
 import { ClientRouter} from './clientRouter.js'
 import { LoginRouter } from './loginRouter.js'
 import { SignupRouter } from './signupRouter.js'
+import { DeviceRouter } from './deviceRouter.js'
 import googleAuthRouter from './auth/googleAuthRouter.js'
 
 
@@ -10,6 +11,7 @@ function appRouter(app){
 
     const clientRouter = new ClientRouter()
     const userRouter = new UserRouter()
+    const deviceRouter = new DeviceRouter()
 
     const routerHelper = express.Router()
     app.use('/helpers', routerHelper)
@@ -20,6 +22,7 @@ function appRouter(app){
     app.use('/api/v1', router)
     router.use('/user', userRouter.start())
     router.use('/client', clientRouter.start())
+    router.use('/device', deviceRouter.start())
 }
 
 function notAuthRoutes(app){
