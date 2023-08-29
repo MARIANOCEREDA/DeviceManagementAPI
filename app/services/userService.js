@@ -60,10 +60,15 @@ class UserService {
     async getUserByUsername(username) {
 
         const user = await this.models.User.findOne({
-            where:{ username }
+            where:{ username:username }
         })
 
         if (!user) {
+            throw createError(404, "User not found.")
+        }
+
+
+        if (user == null) {
             throw createError(500, "Not able to connect to the Database.")
         }
 

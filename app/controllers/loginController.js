@@ -6,7 +6,7 @@ class LoginController{
         this.service = new UserService();
     }
 
-    async login(request, response, next){
+    login = async (request, response, next) => {
 
         try {
             

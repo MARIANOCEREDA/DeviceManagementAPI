@@ -14,9 +14,7 @@ class LoginRouter{
 
         this.router.post('/', 
                         validatorHandler(loginSchema, 'body'),
-                        async(request, response, next)=>{
-                            await this.controller.login(request, response, next);
-                        });
+                        this.controller.login);
 
         return this.router
 
